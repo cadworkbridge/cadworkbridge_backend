@@ -1,3 +1,7 @@
 from django.contrib import admin
+from .models import HomeCard
 
-# Register your models here.
+@admin.register(HomeCard)
+class HomeCardAdmin(admin.ModelAdmin):
+    list_display = ("title", "youtube_link")
+    search_fields = ("title", "description")

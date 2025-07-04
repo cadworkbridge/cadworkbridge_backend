@@ -1,11 +1,16 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}CORE PAGE{% endblock %}
+
+{% block title %}Home{% endblock %}
+
 {% block css %}
 <link rel="stylesheet" href="{% static 'core/css/core.css' %}">
 {% endblock %}
-{% block body %}
-  <h1>CORE</h1>
-{% endblock %}
 
-{% block js %}{% endblock %}
+{% block body %}
+{#    <h1 class="mt-4">Welcome to the Home Page</h1>#}
+{#  <p>This is the main landing page of the site.</p>#}
+  {% include "core/cards.html" %}
+{% include "core/pagination_card.html" %}
+
+{% endblock %}

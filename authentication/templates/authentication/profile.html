@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Profile{% endblock %}
+
+{% block body %}
+<div class="container mt-5" style="max-width: 600px;">
+  <h2 class="mb-4">Your Profile</h2>
+  <div id="profile-info" class="alert alert-info">
+    Loading...
+  </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script src="{% static 'authentication/js/profile.js' %}"></script>
+{% endblock %}

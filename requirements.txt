@@ -17,3 +17,7 @@ social-auth-app-django==5.5.1
 social-auth-core==4.7.0
 gunicorn==21.2.0
 whitenoise
+cloudinary
+django-cloudinary-storage
+pillow
+social-auth-app-django

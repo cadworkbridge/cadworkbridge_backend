@@ -1,29 +1,63 @@
 {% load static %}
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark px-3">
-    <a class="navbar-brand" href="#">MySite</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
-        <span class="navbar-toggler-icon"></span>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container-fluid px-4">
+{#    <a class="navbar-brand" href="#">MySite</a>#}
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+            data-bs-target="#navbarNav" aria-controls="navbarNav"
+            aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
     </button>
 
-    <div class="collapse navbar-collapse" id="navbarContent">
-        <!-- Left side -->
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item">
-                <a class="nav-link" href="/">Home</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/contact/">Contact</a>
-            </li>
-        </ul>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link active" href="{% url 'core:homepage' %}">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" href="{% url 'core:contact' %}">Contact</a>
+        </li>
+      </ul>
 
-        <!-- Right side: dynamic auth links -->
-        <ul class="navbar-nav ms-auto" id="auth-links">
-            <!-- Populated by auth-navbar.js -->
-        </ul>
+      <!-- Auth buttons will be inserted here -->
+      <div class="d-flex" id="auth-buttons"></div>
     </div>
+  </div>
 </nav>
 
-<!-- LOGIN, LOGOUT AND REGISTER ARE IN NAVBAR>JS -->
-<script src="{% static 'js/navbar.js' %}"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const authDiv = document.getElementById("auth-buttons");
+    const access = localStorage.getItem("access");
+    const email = localStorage.getItem("email");
+
+    if (access && email) {
+      // Logged in view
+        authDiv.innerHTML = `
+          <a href="/authentication/profile/" class="nav-link me-3">${email}</a>
+          <button class="btn btn-outline-danger" id="logoutBtn">Logout</button>
+        `;
 
 
+      document.getElementById("logoutBtn").addEventListener("click", async function () {
+        const refresh = localStorage.getItem("refresh");
+
+        await fetch(`${window.location.origin}/auth/jwt/logout/`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ refresh })
+        });
+
+        localStorage.removeItem("access");
+        localStorage.removeItem("refresh");
+        localStorage.removeItem("email");
+        location.reload();
+      });
+    } else {
+      // Logged out view
+      authDiv.innerHTML = `
+        <a href="{% url 'authentication:auth_ui' %}" class="btn btn-outline-primary me-2">Login</a>
+        <a href="{% url 'authentication:auth_ui' %}" class="btn btn-primary">Sign Up</a>
+      `;
+    }
+  });
+</script>
