@@ -26,15 +26,8 @@
     <div class="tab-pane fade show active" id="login" role="tabpanel" aria-labelledby="tab-login">
       <form method="post">
         {% csrf_token %}
-        <a href="" class="btn btn-outline-dark w-100 mb-3">
-          <img src="https://www.google.com/images/branding/googleg/1x/googleg_standard_color_18dp.png" alt="Google" width="20" class="me-2">
-          Sign in with Google
-        </a>
-
-        <p class="text-center">or</p>
-
         <div class="form-outline mb-3">
-          <input type="email" class="form-control" placeholder="Email or Username" name="login_email" required />
+          <input type="email" class="form-control" placeholder="Email" name="login_email" required />
         </div>
 
         <div class="form-outline mb-3">
@@ -58,13 +51,6 @@
     <div class="tab-pane fade" id="register" role="tabpanel" aria-labelledby="tab-register">
       <form method="post">
         {% csrf_token %}
-        <a href="" class="btn btn-outline-dark w-100 mb-3">
-          <img src="https://www.google.com/images/branding/googleg/1x/googleg_standard_color_18dp.png" alt="Google" width="20" class="me-2">
-          Sign up with Google
-        </a>
-
-        <p class="text-center">or</p>
-
         <div class="form-outline mb-3">
           <input type="email" class="form-control" placeholder="Email" name="register_email" required />
         </div>

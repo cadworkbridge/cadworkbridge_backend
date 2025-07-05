@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('authentication/', include(('authentication.urls','authentication'), namespace='authentication')),
@@ -9,9 +10,7 @@ urlpatterns = [
     path('auth/', include(('djoser.urls', 'djoser'), namespace='djoser')),# Djoser main user endpoints
     path('auth/', include(('djoser.urls.jwt', 'jwt'), namespace='jwt')),# Djoser JWT endpoints
 
-    # Social login URLs (Google login)
-
-
+    # Social login URLs (Google logi
 ]
 
 
