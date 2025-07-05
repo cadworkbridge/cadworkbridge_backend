@@ -5,22 +5,33 @@ import cloudinary
 import cloudinary.uploader
 import cloudinary.api
 
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Set up environ
+# Set up environment variables
 env = environ.Env()
-env.read_env(BASE_DIR / ".env")  # 👈 Explicit path to .env
+env.read_env(BASE_DIR / ".env")
 
-# Load SECRET_KEY
+# ------------------------------
+# General Settings
+# ------------------------------
 SECRET_KEY = env("SECRET_KEY")
 DEBUG = env.bool("DEBUG", default=False)
-ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["localhost"])
+ALLOWED_HOSTS = [
+    "http://localhost:3000",  # Frontend URL
+    "https://www.cadworkbridge.com",  # Production domain
+    "https://backend-default.fly.dev",  # Deployed backend
+    "localhost",  # Localhost for development
+    "127.0.0.1",  # Local IP for development
+    "127.0.0.1:8000",  # Localhost with port
+    "localhost:8000",  # Localhost with port
+]
 
-# Application definition
-
+# ------------------------------
+# Installed Apps
+# ------------------------------
 INSTALLED_APPS = [
+    # Django apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -29,30 +40,31 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',  # Required for allauth
 
-    #  3D PARTY APPS
+    # Third-party apps
     'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
     'rest_framework_simplejwt.token_blacklist',
     'djoser',
+    #'social_django',
     'cloudinary',
     'cloudinary_storage',
-# For Google social login
-#     'social_django',
-    #  INTERNAL APPS
+
+
+    # Internal apps
     'authentication',
     'api',
     'core',
     'accounts',
-
-
 ]
 
-
+# ------------------------------
+# Middleware
+# ------------------------------
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # 👈 ADD THIS LINE
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -61,16 +73,31 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-
-
+# ------------------------------
+# CORS & CSRF Settings
+# ------------------------------
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "https://www.cadworkbridge.com",
+    "http://localhost:3000",  # Frontend URL
+    "https://www.cadworkbridge.com",  # Production domain
+    "https://backend-default.fly.dev",  # Deployed backend
 ]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://backend-default.fly.dev",
+    "https://www.cadworkbridge.com",
+    "http://localhost:3000",
+]
+
 CORS_ALLOW_CREDENTIALS = True
 
+# ------------------------------
+# URL Configuration
+# ------------------------------
 ROOT_URLCONF = 'backend.urls'
 
+# ------------------------------
+# Template Settings
+# ------------------------------
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -86,63 +113,68 @@ TEMPLATES = [
     },
 ]
 
+# ------------------------------
+# WSGI Application
+# ------------------------------
 WSGI_APPLICATION = 'backend.wsgi.application'
 
-# Database
-
+# ------------------------------
+# Database Configuration
+# ------------------------------
 DATABASES = {
     'default': env.db("DATABASE_URL")
 }
 
-# Password validation
-# https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
-
+# ------------------------------
+# Password Validation
+# ------------------------------
 AUTH_PASSWORD_VALIDATORS = [
+    # Uncomment to enable password validators
     # {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',},
     # {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',},
     # {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',},
     # {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',},
 ]
 
-# Internationalization
-# https://docs.djangoproject.com/en/5.2/topics/i18n/
-
+# ------------------------------
+# Localization
+# ------------------------------
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
-
+# ------------------------------
+# Static Files
+# ------------------------------
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'  # Required for deployment (e.g. Render)
-STATICFILES_DIRS = [
-    BASE_DIR / 'static',  # global static folder (e.g. for custom CSS/JS)
-]
+STATICFILES_DIRS = [BASE_DIR / 'static']  # Global static folder (for custom CSS/JS)
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
-
+# ------------------------------
+# Default Auto Field
+# ------------------------------
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-#  RST FRAMEWORK CONFIGURATION
+# ------------------------------
+# Django Rest Framework
+# ------------------------------
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
 }
 
-# Custom user model
+# ------------------------------
+# Custom User Model
+# ------------------------------
 AUTH_USER_MODEL = 'accounts.User'
 
-# Simple JWT settings
+# ------------------------------
+# Simple JWT Settings
+# ------------------------------
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
@@ -150,33 +182,31 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
 }
-# Djoser settings
+
+# ------------------------------
+# Djoser Settings
+# ------------------------------
 DJOSER = {
     "LOGIN_FIELD": "email",  # Use email (not username) to log in
     "USER_CREATE_PASSWORD_RETYPE": False,  # Don't require password re-entry on registration
     "SEND_ACTIVATION_EMAIL": False,  # Skip sending activation email after registration
-
     "SERIALIZERS": {
         "user_create": "accounts.serializers.CustomUserCreateSerializer",  # Controls registration input
-        "user": "accounts.serializers.CustomUserSerializer",               # Controls how other users are serialized (rarely used)
-        "current_user": "accounts.serializers.CustomUserSerializer",       # Controls /auth/users/me/ response
+        "user": "accounts.serializers.CustomUserSerializer",  # Controls how other users are serialized
+        "current_user": "accounts.serializers.CustomUserSerializer",  # Controls /auth/users/me/ response
     },
     "PASSWORD_RESET_CONFIRM_URL": "authentication/reset_password_confirm/{uid}/{token}/",
-    "TOKEN_MODEL": None,  # Disable Djoser token model (because you're using JWT, not token auth)
+    "TOKEN_MODEL": None,  # Disable Djoser token model (using JWT instead)
 }
 
-SITE_ID = 2
+# ------------------------------
+# Site Settings
+# ------------------------------
+SITE_ID = 2  # Set the correct site ID in the database
 
-# Site 1: Localhost
-# Site 2: https://backend-default.fly.dev/
-# Site 3: www.cadworkbridge.com
-
-
-
-
-
-
-# ✅ Default "from" address for outgoing emails
+# ------------------------------
+# Email Settings
+# ------------------------------
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
 EMAIL_BACKEND = env("EMAIL_BACKEND")
 EMAIL_HOST = env("EMAIL_HOST")
@@ -185,10 +215,10 @@ EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS")
 EMAIL_HOST_USER = env("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
 
-
-
+# ------------------------------
+# Cloudinary Storage
+# ------------------------------
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-
 
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': env("CLOUDINARY_CLOUD_NAME"),
@@ -202,18 +232,3 @@ cloudinary.config(
     api_secret=env("CLOUDINARY_API_SECRET"),
     secure=True
 )
-
-
-
-
-# On registration, the user is created but not logged in — the user must log in to start a session.
-# On login, Django creates a server-side session and sends a session ID cookie (e.g., sessionid=abc123xyz789); this ID authenticates future requests.
-
-
-
-# On registration, the user is created but no tokens are issued yet — login is required to receive access and refresh JWT tokens.
-# On login, the server generates and sends those tokens via HTTP-only cookies; future requests include them for authentication.
-
-
-
-
