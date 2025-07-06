@@ -1,9 +1,13 @@
+# serializers.py
 from rest_framework import serializers
+from .models import CardModel
 
-# Example (leave commented out for now):
-# from .models import ExampleModel
+class CardListItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CardModel
+        fields = ['id', 'title', 'description', 'image', 'youtube_link', 'pdf_file', 'extra_file']
 
-# class ExampleSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = ExampleModel
-#         fields = '__all__'
+class CardListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CardModel
+        fields = ['id', 'title', 'description', 'image']

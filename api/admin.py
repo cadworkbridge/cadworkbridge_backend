@@ -1,3 +1,7 @@
 from django.contrib import admin
+from .models import CardModel
 
-# Register your models here.
+@admin.register(CardModel)
+class CardModelAdmin(admin.ModelAdmin):
+    list_display = ("title", "youtube_link")
+    search_fields = ("title", "description")
