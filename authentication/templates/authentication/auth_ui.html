@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load socialaccount %}
 
 {% block title %}Login / Register{% endblock %}
 
@@ -11,7 +12,17 @@
 {% block body %}
 <div class="container mt-5" style="max-width: 500px;">
   <!-- Tabs -->
+
+<a href="{% provider_login_url 'google' method='oauth2' %}" class="btn btn-google">
+  <img src="https://developers.google.com/identity/images/g-logo.png" width="20" style="vertical-align: middle; margin-right: 8px;">
+  Sign in with Google
+</a>
+
+
   <ul class="nav nav-pills nav-justified mb-3" id="auth-tabs" role="tablist">
+
+
+
     <li class="nav-item" role="presentation">
       <button class="nav-link active" id="tab-login" data-bs-toggle="pill" data-bs-target="#login" type="button" role="tab" aria-selected="true">Login</button>
     </li>

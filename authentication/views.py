@@ -9,11 +9,8 @@ from rest_framework.views import APIView
 def auth(request):
     return render(request, "authentication/auth_ui.html")
 
-
-
 def reset(request):
     return render(request, "authentication/reset_password.html")
-
 
 def profile(request):
     return render(request, "authentication/profile.html")
@@ -23,7 +20,3 @@ def reset_password_confirm(request, uid, token):
 
 def set_password(request):
     return render(request, "authentication/set_password.html")
-
-
-
-

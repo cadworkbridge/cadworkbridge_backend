@@ -15,4 +15,7 @@ gunicorn
 whitenoise
 cloudinary
 django-cloudinary-storage
+django-storages
 pillow
+dj-stripe
+django-allauth

@@ -1,9 +1,8 @@
 from django.urls import path
-from .views import CardListView, CardListItemView
+from .views import CardListView, CardDetailView
 
-app_name = 'api'  # The app name for namespace purposes
-
+app_name = 'api'
 urlpatterns = [
-    path('cards/', CardListView.as_view(), name='card_list'),  # List view of all cards with trailing slash
-    path('card-item/<int:pk>/', CardListItemView.as_view(), name='card_item'),  # Detail view of a specific card
+    path('cards/', CardListView.as_view(), name='card-list'),               # e.g. /cards/
+    path('cards/<int:pk>/', CardDetailView.as_view(), name='card-detail'),  # e.g. /cards/1/
 ]

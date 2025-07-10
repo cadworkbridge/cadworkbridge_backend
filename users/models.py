@@ -26,6 +26,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     date_joined = models.DateTimeField(default=timezone.now)
+    last_login = models.DateTimeField(default=timezone.now)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -38,3 +39,15 @@ class User(AbstractBaseUser, PermissionsMixin):
     class Meta:
         verbose_name = "user"
         verbose_name_plural = "users"
+
+class Profile(models.Model):
+    """
+    User profile model to store additional information like bio, avatar, etc.
+    """
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
+    phone = models.CharField(max_length=15, blank=True, null=True)  # Mobile phone field
+    avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)  # Profile picture
+    birth_date = models.DateField(null=True, blank=True)  # Optional birth date
+
+    def __str__(self):
+        return f"{self.user.email}'s profile"
