@@ -101,6 +101,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
     ),
 }
 
@@ -157,8 +158,16 @@ AUTHENTICATION_BACKENDS = [
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_LOGIN_METHODS = {"email"}  # ✅ Set with 'email'
 ACCOUNT_SIGNUP_FIELDS = ["email*", "password*"]
-LOGIN_REDIRECT_URL = '/'
+
+LOGIN_REDIRECT_URL = '/authentication/google-redirect/'
+
+# LOGIN_REDIRECT_URL = '/'
+
+
+
 ACCOUNT_LOGOUT_REDIRECT_URL = '/'
+
+
 SOCIALACCOUNT_AUTO_SIGNUP = True
 SOCIALACCOUNT_LOGIN_ON_GET = True
 SOCIALACCOUNT_PROVIDERS = {
