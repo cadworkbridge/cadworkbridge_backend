@@ -113,6 +113,14 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
+
+    # 👇 Required for cookie-based auth
+    "AUTH_COOKIE": "access",  # same as DJOSER["JWT_AUTH_COOKIE"]
+    "AUTH_COOKIE_REFRESH": "refresh",  # same as DJOSER["JWT_AUTH_REFRESH_COOKIE"]
+    "AUTH_COOKIE_SECURE": True,  # set to True in production
+    "AUTH_COOKIE_HTTP_ONLY": True,
+    "AUTH_COOKIE_PATH": "/",
+    "AUTH_COOKIE_SAMESITE": "Lax",
 }
 # Djoser settings
 DJOSER = {
@@ -126,6 +134,9 @@ DJOSER = {
     },
     "PASSWORD_RESET_CONFIRM_URL": "authentication/reset_password_confirm/{uid}/{token}/",
     "TOKEN_MODEL": None,
+    "JWT_AUTH_COOKIE": "access",
+    "JWT_AUTH_REFRESH_COOKIE": "refresh",
+
 }
 
 # Site settings
@@ -157,17 +168,9 @@ AUTHENTICATION_BACKENDS = [
 ]
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_LOGIN_METHODS = {"email"}  # ✅ Set with 'email'
-ACCOUNT_SIGNUP_FIELDS = ["email*", "password*"]
-
-LOGIN_REDIRECT_URL = '/authentication/google-redirect/'
-
-# LOGIN_REDIRECT_URL = '/'
-
-
-
+ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*"]
+LOGIN_REDIRECT_URL = '/'
 ACCOUNT_LOGOUT_REDIRECT_URL = '/'
-
-
 SOCIALACCOUNT_AUTO_SIGNUP = True
 SOCIALACCOUNT_LOGIN_ON_GET = True
 SOCIALACCOUNT_PROVIDERS = {
