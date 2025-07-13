@@ -9,10 +9,9 @@ urlpatterns = [
     path('profile/', views.profile, name='profile'),
     path("reset_password_confirm/<uid>/<token>/", views.reset_password_confirm, name="reset-password-confirm"),
     path('set-password/', views.set_password, name='set_password'),
-    path("session-to-jwt/", views.session_to_jwt, name="session-to-jwt"),
 
-    path("jwt/create/", views.CookieTokenObtainPairView.as_view(), name="cookie_token_obtain_pair"),
+    path("django-session-to-jwt/", views.session_to_jwt, name="session-to-jwt"),
 
-    # ✅ Google redirect page after login
+    path("django-session-to-jwt/", views.session_to_jwt, name="session-to-jwt"),
 
 ]

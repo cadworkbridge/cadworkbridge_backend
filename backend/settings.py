@@ -8,9 +8,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 env = environ.Env()
 env.read_env(BASE_DIR / ".env")
 
-SECRET_KEY = env("SECRET_KEY")
-DEBUG = env.bool("DEBUG", default=True)
-ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["localhost"])
+SECRET_KEY = env("SECRET_KEY")  # Django's cryptographic key (keep secret in production)
+DEBUG = env.bool("DEBUG", default=True)  # Enable debug mode (set to False in production)
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["localhost"])  # Domains that can serve the app
 
 
 INSTALLED_APPS = [
@@ -42,23 +42,28 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'allauth.account.middleware.AccountMiddleware',  # ALLAUTH
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',                    # Handles CORS
+    'django.middleware.security.SecurityMiddleware',            # Basic security headers
+    'whitenoise.middleware.WhiteNoiseMiddleware',               # Serve static files
+    'django.contrib.sessions.middleware.SessionMiddleware',     # Enable sessions
+    'django.middleware.common.CommonMiddleware',                # Common utilities
+    'django.middleware.csrf.CsrfViewMiddleware',                # CSRF protection
+    'django.contrib.auth.middleware.AuthenticationMiddleware',  # Associates users with requests
+    'allauth.account.middleware.AccountMiddleware',             # Allauth session handling
+    'django.contrib.messages.middleware.MessageMiddleware',     # Flash messages
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',   # Prevent clickjacking
 ]
 
-CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
-CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS", default=[])
 
 
-CORS_ALLOW_CREDENTIALS = True
+
+
+CORS_ALLOW_CREDENTIALS = True  # Allow cookies/headers in cross-origin requests
+CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])  # Frontend domains allowed to bypass CSRF
+CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS", default=[])  # Frontend domains allowed to access API
+
+
+
 
 ROOT_URLCONF = 'backend.urls'
 
@@ -100,57 +105,57 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
+        'users.authentication.CustomJWTAuthentication',   # JWT from cookies
+        'rest_framework.authentication.SessionAuthentication',  # For admin/session
     ),
 }
+
+
 
 AUTH_USER_MODEL = 'users.User'
 # JWT settings
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
-    'AUTH_HEADER_TYPES': ('Bearer',),
-    'ROTATE_REFRESH_TOKENS': True,
-    'BLACKLIST_AFTER_ROTATION': True,
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),  # Access token expiry
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),     # Refresh token expiry
+    'AUTH_HEADER_TYPES': ('Bearer',),                # Accepted auth header
+    'ROTATE_REFRESH_TOKENS': True,                   # Rotate refresh tokens
+    'BLACKLIST_AFTER_ROTATION': True,                # Blacklist old tokens
 
-    # 👇 Required for cookie-based auth
-    "AUTH_COOKIE": "access",  # same as DJOSER["JWT_AUTH_COOKIE"]
-    "AUTH_COOKIE_REFRESH": "refresh",  # same as DJOSER["JWT_AUTH_REFRESH_COOKIE"]
-    "AUTH_COOKIE_SECURE": True,  # set to True in production
-    "AUTH_COOKIE_HTTP_ONLY": True,
-    "AUTH_COOKIE_PATH": "/",
-    "AUTH_COOKIE_SAMESITE": "Lax",
+    "AUTH_COOKIE": "access",                         # Access token cookie name
+    "AUTH_COOKIE_REFRESH": "refresh",                # Refresh token cookie name
+    "AUTH_COOKIE_SECURE": True,                      # Use HTTPS only
+    "AUTH_COOKIE_HTTP_ONLY": True,                   # JS can't access
+    "AUTH_COOKIE_PATH": "/",                         # Valid for all paths
+    "AUTH_COOKIE_SAMESITE": "Lax",                   # CSRF protection
 }
 # Djoser settings
 DJOSER = {
-    "LOGIN_FIELD": "email",
-    "USER_CREATE_PASSWORD_RETYPE": False,
-    "SEND_ACTIVATION_EMAIL": False,
-    "SERIALIZERS": {
-        "user_create": "users.serializers.CustomUserCreateSerializer",
-        "user": "users.serializers.CustomUserSerializer",
-        "current_user": "users.serializers.CustomUserSerializer",
-    },
-    "PASSWORD_RESET_CONFIRM_URL": "authentication/reset_password_confirm/{uid}/{token}/",
-    "TOKEN_MODEL": None,
-    "JWT_AUTH_COOKIE": "access",
-    "JWT_AUTH_REFRESH_COOKIE": "refresh",
+    "LOGIN_FIELD": "email",                                     # Login using email
+    "USER_CREATE_PASSWORD_RETYPE": False,                       # No second password field
+    "SEND_ACTIVATION_EMAIL": False,                             # No activation email
+    'ACTIVATION_URL': 'activation/{uid}/{token}',
 
+    "SERIALIZERS": {
+        "user_create": "users.serializers.CustomUserCreateSerializer",  # Custom signup serializer
+        "user": "users.serializers.CustomUserSerializer",               # Returned user serializer
+        "current_user": "users.serializers.CustomUserSerializer",       # /me endpoint
+    },
+    "PASSWORD_RESET_CONFIRM_URL": "auth/reset_password_confirm/{uid}/{token}/",  # Reset link path
+    "TOKEN_MODEL": None,                                        # Use JWT, not token model
+    "JWT_AUTH_COOKIE": "access",                                # Access cookie name
+    "JWT_AUTH_REFRESH_COOKIE": "refresh",                       # Refresh cookie name
 }
 
 # Site settings
-SITE_DOMAINS = env.list("SITE_DOMAINS", default=["localhost"])
 SITE_ID = 1
+DJANGO_ENV = "local"
+if DJANGO_ENV == "production":
+    DOMAIN = "cadworkbridge.fly.dev"
+    SITE_NAME = "cadworkbridge"
+elif DJANGO_ENV == "local":
+    DOMAIN = "localhost:8000"
+    SITE_NAME = "Local Dev"
 
-# Email settings
-DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
-EMAIL_BACKEND = env("EMAIL_BACKEND")
-EMAIL_HOST = env("EMAIL_HOST")
-EMAIL_PORT = env.int("EMAIL_PORT")
-EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS")
-EMAIL_HOST_USER = env("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
 
 # Cloudinary settings
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
@@ -167,9 +172,9 @@ AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
-ACCOUNT_LOGIN_METHODS = {"email"}  # ✅ Set with 'email'
+ACCOUNT_LOGIN_METHODS = {"email"}
 ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*"]
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = "/authentication/django-session-to-jwt/"
 ACCOUNT_LOGOUT_REDIRECT_URL = '/'
 SOCIALACCOUNT_AUTO_SIGNUP = True
 SOCIALACCOUNT_LOGIN_ON_GET = True
@@ -186,3 +191,19 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 
+EMAIL_SMTP_MODE = "GMAIL"
+if EMAIL_SMTP_MODE == "GMAIL":
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = 'smtp.gmail.com'
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
+    EMAIL_HOST_USER = env("EMAIL_HOST_USER")
+    EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
+elif EMAIL_SMTP_MODE == "BREVO":
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = 'smtp-relay.brevo.com'
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
+    EMAIL_HOST_USER = '91f228002@smtp-brevo.com'
+    EMAIL_HOST_PASSWORD = 'Fzwx5BmYrU61P2Gk'
+    DEFAULT_FROM_EMAIL = 'CadworkBridge <cadworkbridge@gmail.com>'
