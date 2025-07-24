@@ -19,3 +19,6 @@ django-storages
 pillow
 dj-stripe
 django-allauth
+drf-spectacular
+django-filter
+cwapi3d

@@ -1,8 +1,8 @@
 from django.urls import path
 from .views import CardListView, CardDetailView
 
-app_name = 'api'
+app_name = 'cards'
 urlpatterns = [
-    path('cards/', CardListView.as_view(), name='card-list'),               # e.g. /cards/
-    path('cards/<int:pk>/', CardDetailView.as_view(), name='card-detail'),  # e.g. /cards/1/
+    path('', CardListView.as_view(), name='card-list'),               # e.g. /cards/
+    path('<int:pk>/', CardDetailView.as_view(), name='card-detail'),  # e.g. /cards/1/
 ]

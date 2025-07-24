@@ -29,10 +29,13 @@ INSTALLED_APPS = [
     'storages',
     'cloudinary',
     'cloudinary_storage',
-    'authentication',
-    'api',
+    'cards',
+    'cadwork',
+    'payments',
     'core',
     'users',
+    'django_filters',
+    'drf_spectacular',
     # Allauth core
     'allauth',
     'allauth.account',
@@ -40,6 +43,8 @@ INSTALLED_APPS = [
     # Add your social provider (e.g. Google)
     'allauth.socialaccount.providers.google',
 ]
+
+
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',                    # Handles CORS
@@ -52,6 +57,7 @@ MIDDLEWARE = [
     'allauth.account.middleware.AccountMiddleware',             # Allauth session handling
     'django.contrib.messages.middleware.MessageMiddleware',     # Flash messages
     'django.middleware.clickjacking.XFrameOptionsMiddleware',   # Prevent clickjacking
+    'core.middleware.JWTAuthMiddleware' #Django middleware, you can access user info (request.user) anywhere in your backend
 ]
 
 
@@ -99,7 +105,13 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+if DEBUG:
+    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+else:
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -108,7 +120,17 @@ REST_FRAMEWORK = {
         'users.authentication.CustomJWTAuthentication',   # JWT from cookies
         'rest_framework.authentication.SessionAuthentication',  # For admin/session
     ),
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+
 }
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Your API Title',
+    'DESCRIPTION': 'Optional description here',
+    'VERSION': '1.0.0',
+}
+
 
 
 
@@ -132,8 +154,8 @@ SIMPLE_JWT = {
 DJOSER = {
     "LOGIN_FIELD": "email",                                     # Login using email
     "USER_CREATE_PASSWORD_RETYPE": False,                       # No second password field
-    "SEND_ACTIVATION_EMAIL": False,                             # No activation email
-    'ACTIVATION_URL': 'activation/{uid}/{token}',
+    "SEND_ACTIVATION_EMAIL": True,  # Activation email will be sent if is_active=False
+    'ACTIVATION_URL': 'auth/activation/{uid}/{token}',
 
     "SERIALIZERS": {
         "user_create": "users.serializers.CustomUserCreateSerializer",  # Custom signup serializer
@@ -147,14 +169,24 @@ DJOSER = {
 }
 
 # Site settings
-SITE_ID = 1
-DJANGO_ENV = "local"
+DJANGO_ENV = env("DJANGO_ENV", default="local")
+
 if DJANGO_ENV == "production":
+    SITE_ID = 1
+    DOMAIN = "cadworkbridge.com"
+    SITE_NAME = "CadworkBridge"
+
+elif DJANGO_ENV == "FlyPreview":
+    SITE_ID = 2
     DOMAIN = "cadworkbridge.fly.dev"
-    SITE_NAME = "cadworkbridge"
+    SITE_NAME = "FlyPreview"
+
 elif DJANGO_ENV == "local":
+    SITE_ID = 3
     DOMAIN = "localhost:8000"
-    SITE_NAME = "Local Dev"
+    SITE_NAME = "LocalDev"
+
+
 
 
 # Cloudinary settings
@@ -174,7 +206,7 @@ AUTHENTICATION_BACKENDS = [
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_LOGIN_METHODS = {"email"}
 ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*"]
-LOGIN_REDIRECT_URL = "/authentication/django-session-to-jwt/"
+LOGIN_REDIRECT_URL = "/auth/session-to-jwt/"
 ACCOUNT_LOGOUT_REDIRECT_URL = '/'
 SOCIALACCOUNT_AUTO_SIGNUP = True
 SOCIALACCOUNT_LOGIN_ON_GET = True
@@ -190,20 +222,20 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_SMTP_MODE = env("EMAIL_SMTP_MODE", default="GMAIL")
 
-EMAIL_SMTP_MODE = "GMAIL"
 if EMAIL_SMTP_MODE == "GMAIL":
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
     EMAIL_HOST = 'smtp.gmail.com'
     EMAIL_PORT = 587
     EMAIL_USE_TLS = True
-    EMAIL_HOST_USER = env("EMAIL_HOST_USER")
-    EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
+    EMAIL_HOST_USER = env("GMAIL_EMAIL_USER")
+    EMAIL_HOST_PASSWORD = env("GMAIL_EMAIL_PASSWORD")
+    DEFAULT_FROM_EMAIL = 'CadworkBridge <cadworkbridge@gmail.com>'
 elif EMAIL_SMTP_MODE == "BREVO":
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
     EMAIL_HOST = 'smtp-relay.brevo.com'
     EMAIL_PORT = 587
     EMAIL_USE_TLS = True
-    EMAIL_HOST_USER = '91f228002@smtp-brevo.com'
-    EMAIL_HOST_PASSWORD = 'Fzwx5BmYrU61P2Gk'
+    EMAIL_HOST_USER = env("BREVO_EMAIL_USER")
+    EMAIL_HOST_PASSWORD = env("BREVO_EMAIL_PASSWORD")
     DEFAULT_FROM_EMAIL = 'CadworkBridge <cadworkbridge@gmail.com>'

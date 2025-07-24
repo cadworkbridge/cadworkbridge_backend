@@ -11,7 +11,7 @@ urlpatterns = [
     path("jwt/refresh/", views.CustomTokenRefreshView.as_view(), name="cookie_token_refresh"),
     path("jwt/verify/", views.CustomTokenVerifyView.as_view(), name="cookie_token_verify"),
     path("logout/", views.LogoutView.as_view(), name="cookie_token_logout"),
-
+    path("verify-activation/", views.VerifyActivationView.as_view()),
 
     # ✅ Google redirect page after login
 
