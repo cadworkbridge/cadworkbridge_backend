@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block title %}Home{% endblock title %}
+{% block css %}<link href="{% static 'css/core.css' %}" rel="stylesheet" />{% endblock %}
+
+{% block body %}
+  <div style="display: flex; flex-direction: column; min-height: 100vh;">
+    {% include "core/components/navbar.html" %}
+
+    <main style="flex-grow: 1;">
+      <h1>Welcome to Core App Home</h1>
+      {% include "core/components/card_list.html" with cards=cards %}
+    </main>
+
+    <footer class="bg-dark text-white py-4 mt-auto">
+      <div class="container text-center">
+        <p class="mb-0">&copy; 2025 Your Company Name. All rights reserved.</p>
+      </div>
+    </footer>
+  </div>
+{% endblock body %}
+{% block js %}<script src="{% static 'js/core.js' %}"></script>{% endblock %}

@@ -1,0 +1,55 @@
+# Python
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.pdb
+
+# Environment variables
+.env
+# flake8 configuration
+.flake8
+
+# Django
+db.sqlite3
+/media/
+*.log
+*.pot
+*.py[cod]
+*.sqlite3
+*.mo
+
+# Migrations (optional – if you're not versioning them)
+**/migrations/*.py
+**/migrations/__pycache__/
+
+# Static and compiled files
+staticfiles/
+static_root/
+static/
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.swp
+
+# Node
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Fly.io / Deployment
+fly.toml
+.dockerignore
+Dockerfile
+
+# Build Artifacts
+build/
+dist/
+*.egg-info/
+.eggs/

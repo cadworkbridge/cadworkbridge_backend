@@ -1,0 +1,32 @@
+<div class="container mt-5">
+  <div class="row">
+    {% for card in cards %}
+      <div class="col-md-4 mb-4">
+        <div class="card h-100">
+          <img src="{{ card.image.url }}" class="card-img-top" alt="{{ card.title }}">
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title">{{ card.title }}</h5>
+            <p class="card-text">{{ card.description|truncatechars:100 }}</p>
+
+            {% if card.youtube_link %}
+              <a href="{{ card.youtube_link }}" class="btn btn-outline-danger mt-auto" target="_blank">Watch Video</a>
+            {% endif %}
+
+            {% if card.pdf_file %}
+              <a href="{{ card.pdf_file.url }}" class="btn btn-outline-secondary mt-2" download>Download PDF</a>
+            {% endif %}
+
+            {% if card.extra_file %}
+              <a href="{{ card.extra_file.url }}" class="btn btn-outline-secondary mt-2" download>Download Extra File</a>
+            {% endif %}
+          </div>
+          <div class="card-footer text-muted small">
+            {% if card.video_length %}Length: {{ card.video_length }}{% endif %}
+            {% if card.language %} | Language: {{ card.language }}{% endif %}
+            {% if card.price %} | Price: ${{ card.price }}{% endif %}
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
